@@ -1,0 +1,39 @@
+name: Remove stale documentation label
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  remove-stale-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove documentation label if PR no longer touches ydb/docs/**
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            const hasDocs = files.some((f) => f.filename.startsWith('ydb/docs/'));
+
+            if (!hasDocs) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  name: 'documentation',
+                });
+                core.info('Removed stale documentation label');
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                core.info('Documentation label not present, nothing to remove');
+              }
+            }
