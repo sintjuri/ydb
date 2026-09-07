@@ -11,7 +11,7 @@ Builds a new column with the specified name, type, and options for the specified
 ALTER TABLE table_name ADD COLUMN column_name column_data_type [FAMILY <family_name>] [NULL | NOT NULL] [DEFAULT <default_value>] [COMPRESSION([algorithm=<algorithm_name>[, level=<value>]])] [ENCODING([OFF|DICT])];
 ```
 
-When adding a column with the `NOT NULL` constraint, you must also specify `DEFAULT`. The default value is used for existing rows.
+When adding a column with the `NOT NULL` constraint to a [row-oriented table](../../../../concepts/datamodel/table.md#row-oriented-tables), you must also specify `DEFAULT`. The default value is used to populate existing rows. Column-oriented tables do not support adding a `NOT NULL` column because they do not support `DEFAULT` values.
 
 
 ## Request parameters
@@ -56,7 +56,7 @@ Modifies properties of an existing column in the specified table. Property chang
 
 ```yql
 ALTER TABLE table_name ALTER COLUMN column_name SET [FAMILY <family_name>]{% if feature_alter_column_not_null == true %} [NOT NULL]{% endif %} [DEFAULT <default_value>] [COMPRESSION([algorithm=<algorithm_name>[, level=<value>]])] [ENCODING([OFF|DICT])];
-ALTER TABLE table_name ALTER COLUMN column_name DROP [FAMILY]{% if feature_alter_column_not_null == true %} [NOT NULL]{% endif %} [DEFAULT] [COMPRESSION] [ENCODING];
+ALTER TABLE table_name ALTER COLUMN column_name DROP [FAMILY] [NOT NULL] [DEFAULT] [COMPRESSION] [ENCODING];
 ```
 
 
