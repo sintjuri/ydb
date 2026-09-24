@@ -932,6 +932,17 @@ Unlike `CAST("myString" AS MyType)`:
 * The check for literal's castability to the desired type occurs at validation.
 * The result is non-optional.
 
+The `<string>` argument represents a string literal, not an arbitrary expression. Variables, columns, query parameters, and function results are not supported. To convert a value at query execution time, use `CAST(expression AS <Primitive type>)`. For example, convert a computed `String` to `Uuid` using `CAST(expression AS Uuid)`:
+
+```yql
+$uuid = Uuid("550e8400-e29b-41d4-a716-446655440000");
+$uuidAsString = CAST($uuid AS String);
+
+SELECT CAST($uuidAsString AS Uuid) = $uuid; -- true
+```
+
+`Uuid($uuidAsString)` is invalid because the argument is an expression rather than a string literal.
+
 For the data types `Date`, `Datetime`, `Timestamp`, and `Interval`, literals are supported only in the format corresponding to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). `Interval` has the following differences from the standard:
 
 * It supports the negative sign for shifts to the past.
